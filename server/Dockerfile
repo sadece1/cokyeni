@@ -64,10 +64,9 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost/health || exit 1
 
-# Start both NGINX and Node.js using start script
-# Node.js runs in foreground (logs visible in Dokploy)
-# NGINX runs in background
-CMD ["/app/start.sh"]
+# Start both NGINX and Node.js
+# NGINX in background, Node.js in foreground (logs visible)
+CMD ["/bin/sh", "-c", "mkdir -p /app/logs && echo 'Starting NGINX...' && nginx & sleep 2 && echo 'Starting Node.js...' && exec node dist/server.js"]
 
 
 

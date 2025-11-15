@@ -18,8 +18,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build
-RUN node node_modules/vite/bin/vite.js build
+# Build (runs TypeScript compilation + Vite build)
+RUN npm run build
 
 # Stage 2: Nginx
 FROM nginx:alpine

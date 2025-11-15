@@ -41,10 +41,6 @@ COPY --from=builder /app/dist ./dist
 # Alpine Linux uses /etc/nginx/conf.d/ for server configs
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy start script
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
 # Create uploads and logs directories
 RUN mkdir -p uploads logs /var/log/nginx /var/cache/nginx /var/run/nginx
 

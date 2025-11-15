@@ -1,4 +1,5 @@
-// Frontend-only mode - store files as base64 data URLs
+import api from './api';
+
 export interface UploadedFile {
   filename: string;
   path: string;
@@ -11,69 +12,37 @@ export interface UploadResponse {
   data?: UploadedFile | UploadedFile[];
 }
 
-// Convert file to base64 data URL
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-};
-
 export const uploadService = {
-  /**
-   * Tek bir resim yükle - Frontend-only mode: convert to base64
-   */
   async uploadImage(file: File): Promise<UploadedFile> {
-    // Convert to base64
-    const base64 = await fileToBase64(file);
-    
-    const uploadedFile: UploadedFile = {
-      filename: file.name,
-      path: base64, // Store as data URL
-      size: file.size,
-    };
+    const formData = new FormData();
+    formData.append('file', file);
 
-    return uploadedFile;
+    const response = await api.post<{ file: UploadedFile }>('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.file || response.data as any;
   },
 
-  /**
-   * Birden fazla resim yükle - Frontend-only mode: convert to base64
-   */
   async uploadImages(files: File[]): Promise<UploadedFile[]> {
-    const uploadedFiles: UploadedFile[] = [];
-    
-    for (const file of files) {
-      const base64 = await fileToBase64(file);
-      uploadedFiles.push({
-        filename: file.name,
-        path: base64, // Store as data URL
-        size: file.size,
-      });
-    }
+    const formData = new FormData();
+    files.forEach(file => formData.append('files', file));
 
-    return uploadedFiles;
+    const response = await api.post<{ files: UploadedFile[] }>('/upload/multiple', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.files || response.data as any;
   },
 
-  /**
-   * Yüklenen dosyayı sil - Frontend-only mode: no-op
-   */
   async deleteFile(filename: string): Promise<void> {
-    // Frontend-only mode: nothing to delete on server
-    console.log('File deletion skipped in frontend-only mode:', filename);
+    await api.delete(`/upload/${filename}`);
   },
 
-  /**
-   * Dosya yolunu tam URL'ye dönüştür - Frontend-only mode: return as is
-   */
   getFileUrl(path: string): string {
-    // If already a data URL or http URL, return as is
+    // If already a full URL or data URL, return as is
     if (path.startsWith('data:') || path.startsWith('http://') || path.startsWith('https://')) {
       return path;
     }
-    // For other paths, assume it's a valid URL
-    return path;
+    // Otherwise, prepend API base URL
+    return `${api.defaults.baseURL}${path}`;
   },
 };
-

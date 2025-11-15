@@ -11,7 +11,7 @@ COPY package-lock.json ./
 COPY tsconfig.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY src ./src
@@ -30,7 +30,7 @@ WORKDIR /app
 # Install only production dependencies
 COPY package*.json ./
 COPY package-lock.json ./
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist

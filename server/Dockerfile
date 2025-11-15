@@ -65,8 +65,8 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost/health || exit 1
 
 # Start both NGINX and Node.js
-# Use sh to ensure script runs
-CMD ["/bin/sh", "/app/start.sh"]
+# Start Node.js in background, then NGINX in foreground
+CMD ["/bin/sh", "-c", "node dist/server.js > /app/logs/node.log 2>&1 & sleep 5 && nginx -g 'daemon off;'"]
 
 
 

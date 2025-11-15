@@ -23,19 +23,24 @@ if [ ! -f "dist/server.js" ]; then
     exit 1
 fi
 
-# Start Node.js with output to stdout/stderr
+# Ensure logs directory exists
+mkdir -p /app/logs
+
+# Start Node.js with output to both file and stdout
 node dist/server.js > /app/logs/node.log 2>&1 &
 NODE_PID=$!
 
 # Wait a bit for Node.js to start
 echo "⏳ Waiting for Node.js to be ready..."
-sleep 10
+sleep 15
 
 # Check if Node.js is running
 if ! kill -0 $NODE_PID 2>/dev/null; then
     echo "❌ Node.js failed to start"
-    echo "📋 Last 20 lines of node.log:"
-    tail -20 /app/logs/node.log || echo "No logs available"
+    echo "📋 Last 50 lines of node.log:"
+    tail -50 /app/logs/node.log || echo "No logs available"
+    echo "📋 Process list:"
+    ps aux || echo "ps command failed"
     exit 1
 fi
 

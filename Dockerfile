@@ -6,15 +6,15 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
-COPY package-lock.json ./
-COPY tsconfig.json ./
+COPY server/package*.json ./
+COPY server/package-lock.json ./
+COPY server/tsconfig.json ./
 
 # Install dependencies
 RUN npm install
 
 # Copy source code
-COPY src ./src
+COPY server/src ./src
 
 # Build TypeScript
 RUN npm run build
@@ -28,8 +28,8 @@ RUN apk add --no-cache nginx wget
 WORKDIR /app
 
 # Install only production dependencies
-COPY package*.json ./
-COPY package-lock.json ./
+COPY server/package*.json ./
+COPY server/package-lock.json ./
 RUN npm install --only=production
 
 # Copy built files from builder
@@ -37,10 +37,10 @@ COPY --from=builder /app/dist ./dist
 
 # Copy NGINX configuration
 # Alpine Linux uses /etc/nginx/conf.d/ for server configs
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY server/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy start script
-COPY start.sh /app/start.sh
+COPY server/start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
 # Create uploads and logs directories

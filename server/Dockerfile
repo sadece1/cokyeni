@@ -41,6 +41,10 @@ COPY --from=builder /app/dist ./dist
 # Alpine Linux uses /etc/nginx/conf.d/ for server configs
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Copy start script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Create uploads and logs directories
 RUN mkdir -p uploads logs /var/log/nginx /var/cache/nginx /var/run/nginx
 
@@ -60,10 +64,10 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost/health || exit 1
 
-# Start both NGINX and Node.js
-# Start Node.js in background with logs to stdout/stderr (visible in Dokploy)
-# NGINX runs in foreground to keep container alive
-CMD ["/bin/sh", "-c", "mkdir -p /app/logs && node dist/server.js & sleep 3 && nginx -g 'daemon off;'"]
+# Start both NGINX and Node.js using start script
+# Node.js runs in foreground (logs visible in Dokploy)
+# NGINX runs in background
+CMD ["/app/start.sh"]
 
 
 

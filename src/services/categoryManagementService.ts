@@ -7,6 +7,10 @@ export const categoryManagementService = {
     return response.data.categories || response.data as any;
   },
 
+  async getAllCategories(): Promise<Category[]> {
+    return this.getCategories();
+  },
+
   async getCategoryById(id: string): Promise<Category> {
     const response = await api.get<{ category: Category }>(`/categories/${id}`);
     return response.data.category || response.data as any;

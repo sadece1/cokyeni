@@ -7,6 +7,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY package-lock.json ./
 COPY tsconfig.json ./
 
 # Install dependencies
@@ -28,6 +29,7 @@ WORKDIR /app
 
 # Install only production dependencies
 COPY package*.json ./
+COPY package-lock.json ./
 RUN npm ci --only=production
 
 # Copy built files from builder

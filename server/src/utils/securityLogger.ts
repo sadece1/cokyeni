@@ -191,6 +191,19 @@ export const getUserAgent = (req: any): string | undefined => {
   return req.headers['user-agent'];
 };
 
+// Export securityLogger object for convenience
+export const securityLogger = {
+  logSecurityEvent,
+  logFailedLogin,
+  logSuccessfulLogin,
+  logBruteForce,
+  logSuspiciousActivity,
+  logUnauthorizedAccess,
+  logAdminAction,
+  getClientIp,
+  getUserAgent,
+};
+
 
 
 

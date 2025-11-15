@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import pool from '../config/database';
 import { v4 as uuidv4 } from 'uuid';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
@@ -36,7 +37,7 @@ interface UserOrderRow extends RowDataPacket {
  * Create a new user order
  */
 export const createOrder = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -146,7 +147,7 @@ export const createOrder = async (
  * Get all orders (admin) or user's orders
  */
 export const getOrders = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -210,7 +211,7 @@ export const getOrders = async (
  * Get order by ID
  */
 export const getOrderById = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -270,7 +271,7 @@ export const getOrderById = async (
  * Update order (admin only)
  */
 export const updateOrder = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -421,7 +422,7 @@ export const updateOrder = async (
  * Delete order (admin only)
  */
 export const deleteOrder = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {

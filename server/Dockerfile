@@ -61,9 +61,9 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost/health || exit 1
 
 # Start both NGINX and Node.js
-# Start Node.js in background, then NGINX in foreground
-# Use tail to keep container alive and show logs
-CMD ["/bin/sh", "-c", "mkdir -p /app/logs && node dist/server.js > /app/logs/node.log 2>&1 & sleep 5 && tail -f /app/logs/node.log & nginx -g 'daemon off;'"]
+# Start Node.js in background with logs to stdout/stderr (visible in Dokploy)
+# NGINX runs in foreground to keep container alive
+CMD ["/bin/sh", "-c", "mkdir -p /app/logs && node dist/server.js & sleep 3 && nginx -g 'daemon off;'"]
 
 
 

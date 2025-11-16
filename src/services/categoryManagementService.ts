@@ -3,8 +3,8 @@ import { Category } from '@/types';
 
 export const categoryManagementService = {
   async getCategories(): Promise<Category[]> {
-    const response = await api.get<{ categories: Category[] }>('/categories');
-    return response.data.categories || response.data as any;
+    const response = await api.get<{ success: boolean; data: Category[] }>('/categories');
+    return response.data.data || [];
   },
 
   async getAllCategories(): Promise<Category[]> {

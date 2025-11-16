@@ -34,4 +34,9 @@ export const categoryManagementService = {
   async deleteCategory(id: string): Promise<void> {
     await api.delete(`/categories/${id}`);
   },
+
+  async getChildCategories(parentId: string): Promise<Category[]> {
+    const allCategories = await this.getCategories();
+    return allCategories.filter(cat => cat.parentId === parentId);
+  },
 };

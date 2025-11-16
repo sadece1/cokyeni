@@ -45,6 +45,24 @@ export const getSingleCategory = asyncHandler(async (req: Request, res: Response
   });
 });
 
+export const getCategoryBySlug = asyncHandler(async (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const { getCategoryBySlug: getCategoryBySlugService } = await import('../services/categoryService');
+  const category = await getCategoryBySlugService(slug);
+  if (!category) {
+    res.status(404).json({ success: false, message: 'Category not found' });
+    return;
+  }
+  res.status(200).json({
+    success: true,
+    data: {
+      ...category,
+      created_at: parseDate(category.created_at),
+      updated_at: parseDate(category.updated_at),
+    },
+  });
+});
+
 export const create = asyncHandler(async (req: AuthRequest, res: Response) => {
   const category = await createCategory(req.body);
   res.status(201).json({

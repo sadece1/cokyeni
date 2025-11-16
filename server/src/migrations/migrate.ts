@@ -17,11 +17,29 @@ const executeSQLFile = async (filePath: string) => {
     logger.info(`Reading migration file: ${path.basename(filePath)}`);
     const schema = fs.readFileSync(filePath, 'utf8');
 
-    // Split by semicolons and filter out empty statements
-    const statements = schema
-      .split(';')
-      .map((stmt) => stmt.trim())
-      .filter((stmt) => stmt.length > 0 && !stmt.startsWith('--'));
+    // Remove comments and split by semicolons
+    // First, remove single-line comments
+    let cleanedSchema = schema.replace(/--.*$/gm, '');
+    
+    // Split by semicolons, but keep multi-line statements together
+    const rawStatements = cleanedSchema.split(';');
+    const statements: string[] = [];
+
+    for (let i = 0; i < rawStatements.length; i++) {
+      let stmt = rawStatements[i].trim();
+      
+      // Skip empty statements
+      if (!stmt || stmt.length === 0) {
+        continue;
+      }
+
+      // If statement doesn't end with a closing parenthesis and next statement exists,
+      // it might be a continuation (though with proper semicolon splitting this shouldn't happen)
+      // For now, just add non-empty statements
+      statements.push(stmt);
+    }
+
+    logger.info(`Found ${statements.length} SQL statements in ${path.basename(filePath)}`);
 
     // Separate CREATE TABLE and CREATE VIEW statements
     const tableStatements: string[] = [];
@@ -31,7 +49,10 @@ const executeSQLFile = async (filePath: string) => {
       const upperStatement = statement.toUpperCase().trim();
       if (upperStatement.startsWith('CREATE OR REPLACE VIEW') || upperStatement.startsWith('CREATE VIEW')) {
         viewStatements.push(statement);
-      } else {
+      } else if (upperStatement.startsWith('CREATE TABLE') || upperStatement.startsWith('CREATE OR REPLACE TABLE')) {
+        tableStatements.push(statement);
+      } else if (upperStatement.length > 0) {
+        // Other statements (ALTER, INSERT, etc.) - treat as table statements
         tableStatements.push(statement);
       }
     }

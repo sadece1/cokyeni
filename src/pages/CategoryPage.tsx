@@ -20,27 +20,33 @@ export const CategoryPage = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   useEffect(() => {
-    const loadCategoryData = () => {
+    const loadCategoryData = async () => {
       if (categorySlug) {
         setIsLoading(true);
-        // Get category info from categoryManagementService
-        const category = categoryManagementService.getCategoryBySlug(categorySlug);
-        
-        if (category) {
-          setCategoryInfo(category);
-          // Get subcategories
-          const children = categoryManagementService.getChildCategories(category.id);
-          setSubCategories(children);
-        } else {
-          // Category not found
+        try {
+          // Get category info from categoryManagementService
+          const category = await categoryManagementService.getCategoryBySlug(categorySlug);
+          
+          if (category) {
+            setCategoryInfo(category);
+            // Get subcategories
+            const children = await categoryManagementService.getChildCategories(category.id);
+            setSubCategories(children);
+          } else {
+            // Category not found
+            setCategoryInfo(null);
+            setIsLoading(false);
+            return;
+          }
+          
+          // Fetch all gear and filter by category
+          // Use a very high limit to get all items for proper filtering
+          fetchGear({}, 1, 10000);
+        } catch (error) {
+          console.error('Failed to load category data:', error);
           setCategoryInfo(null);
           setIsLoading(false);
-          return;
         }
-        
-        // Fetch all gear and filter by category
-        // Use a very high limit to get all items for proper filtering
-        fetchGear({}, 1, 10000);
       }
     };
 
@@ -67,14 +73,16 @@ export const CategoryPage = () => {
   }, [categorySlug, fetchGear]);
 
   useEffect(() => {
-    if (categorySlug) {
-      const category = categoryManagementService.getCategoryBySlug(categorySlug);
-      if (!category) {
-        setIsLoading(false);
-        return;
-      }
+    const checkCategory = async () => {
+      if (categorySlug) {
+        try {
+          const category = await categoryManagementService.getCategoryBySlug(categorySlug);
+          if (!category) {
+            setIsLoading(false);
+            return;
+          }
 
-      if (gear.length > 0) {
+          if (gear.length > 0) {
         // Filter gear by category slug or categoryId
         console.log('Filtering gear for category:', categorySlug, 'Category ID:', category.id);
         console.log('Total gear items:', gear.length);

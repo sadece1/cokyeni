@@ -51,3 +51,4 @@ Eğer Swarm mod kullanmak istiyorsanız:
 "NATIVE MODA GECTIM, REDEPLOY YAPTIM" yazın, sonra logları kontrol edelim.
 
 
+

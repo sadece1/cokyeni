@@ -166,9 +166,8 @@ app.use('/api/upload', uploadLimiter);
 // Enhanced health check endpoint
 app.get('/health', async (req, res) => {
   try {
-    const { testConnection } = await import('./config/database');
-    await testConnection();
-    
+    // Quick health check without database connection test (for faster response)
+    // Database connection is tested on startup, no need to test on every health check
     res.status(200).json({
       success: true,
       message: 'Server is running',

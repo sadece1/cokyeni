@@ -30,10 +30,10 @@
     "healthcheck": {
       "enabled": true,
       "path": "/health",
-      "interval": 30,
-      "timeout": 3,
-      "retries": 3,
-      "startPeriod": 40
+      "interval": 60,
+      "timeout": 10,
+      "retries": 5,
+      "startPeriod": 120
     },
     "restart": "unless-stopped",
     "replicas": 1

@@ -4,6 +4,7 @@ import {
   getCategories,
   getCategoryTree,
   getCategoryById,
+  getCategoryBySlug as getCategoryBySlugService,
   createCategory,
   updateCategory,
   deleteCategory,
@@ -47,7 +48,6 @@ export const getSingleCategory = asyncHandler(async (req: Request, res: Response
 
 export const getCategoryBySlug = asyncHandler(async (req: Request, res: Response) => {
   const { slug } = req.params;
-  const { getCategoryBySlug: getCategoryBySlugService } = require('../services/categoryService');
   const category = await getCategoryBySlugService(slug);
   if (!category) {
     res.status(404).json({ success: false, message: 'Category not found' });

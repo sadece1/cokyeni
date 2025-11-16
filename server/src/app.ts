@@ -60,11 +60,7 @@ app.use(helmet({
     },
   },
   crossOriginEmbedderPolicy: false, // Allow images from external sources
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true,
-  },
+  hsts: false, // Disabled for unified deployment (NGINX handles SSL)
   // Additional security headers
   xFrameOptions: { action: 'deny' },
   xContentTypeOptions: true,

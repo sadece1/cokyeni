@@ -3,14 +3,19 @@ import path from 'path';
 import pool from '../config/database';
 import logger from '../utils/logger';
 
-const schemaPath = path.join(__dirname, 'schema.sql');
+// Migration files in order
+const migrationFiles = [
+  'schema.sql',
+  'schema_extension.sql',
+  'reviews.sql',
+  'user_orders.sql',
+  'create_reference_brands_table.sql',
+];
 
-const runMigration = async () => {
+const executeSQLFile = async (filePath: string) => {
   try {
-    logger.info('Starting database migration...');
-
-    // Read SQL schema file
-    const schema = fs.readFileSync(schemaPath, 'utf8');
+    logger.info(`Reading migration file: ${path.basename(filePath)}`);
+    const schema = fs.readFileSync(filePath, 'utf8');
 
     // Split by semicolons and filter out empty statements
     const statements = schema
@@ -21,8 +26,38 @@ const runMigration = async () => {
     // Execute each statement
     for (const statement of statements) {
       if (statement.trim()) {
-        await pool.execute(statement);
-        logger.info(`Executed: ${statement.substring(0, 50)}...`);
+        try {
+          await pool.execute(statement);
+          logger.info(`✅ Executed: ${statement.substring(0, 80)}...`);
+        } catch (error: any) {
+          // Ignore "table already exists" errors
+          if (error.message && error.message.includes('already exists')) {
+            logger.info(`⚠️  Table already exists, skipping: ${statement.substring(0, 50)}...`);
+          } else {
+            throw error;
+          }
+        }
+      }
+    }
+  } catch (error: any) {
+    logger.error(`❌ Error executing ${path.basename(filePath)}:`, error.message);
+    throw error;
+  }
+};
+
+const runMigration = async () => {
+  try {
+    logger.info('Starting database migration...');
+
+    const migrationsDir = __dirname;
+
+    // Execute all migration files in order
+    for (const file of migrationFiles) {
+      const filePath = path.join(migrationsDir, file);
+      if (fs.existsSync(filePath)) {
+        await executeSQLFile(filePath);
+      } else {
+        logger.warn(`⚠️  Migration file not found: ${file}`);
       }
     }
 

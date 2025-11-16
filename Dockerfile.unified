@@ -96,7 +96,9 @@ RUN chown -R nginx:nginx /var/log/nginx /var/cache/nginx /var/run/nginx && \
 RUN chown -R root:root /var/log/supervisor /var/run/supervisor && \
     chmod 755 /var/log/supervisor /var/run/supervisor && \
     touch /var/run/supervisor/supervisord.sock && \
-    chmod 700 /var/run/supervisor/supervisord.sock
+    chmod 700 /var/run/supervisor/supervisord.sock && \
+    mkdir -p /run && \
+    ln -sf /var/run/supervisor/supervisord.sock /run/supervisord.sock
 
 # Expose port 80
 EXPOSE 80

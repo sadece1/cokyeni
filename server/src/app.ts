@@ -78,12 +78,18 @@ const corsOptions = {
       ? process.env.ALLOWED_ORIGINS.split(',')
       : [process.env.FRONTEND_URL || 'http://localhost:5173'];
     
-    // Allow requests with no origin (mobile apps, Postman, etc.) in development
-    if (!origin && process.env.NODE_ENV === 'development') {
+    // Allow requests with no origin (internal requests from NGINX, mobile apps, Postman, etc.)
+    // Internal requests from NGINX reverse proxy don't have origin header
+    if (!origin) {
       return callback(null, true);
     }
     
-    if (origin && allowedOrigins.includes(origin)) {
+    // Allow localhost/internal origins (for health checks and internal requests)
+    if (origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('::1')) {
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -91,7 +97,7 @@ const corsOptions = {
   },
   credentials: true,
   optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
   exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
   maxAge: 86400, // 24 hours

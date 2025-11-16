@@ -1,12 +1,12 @@
 {
-  "name": "wecamp-frontend",
+  "name": "wecamp-unified",
   "type": "docker",
-  "description": "WeCamp Frontend - Kamp Alanı Pazar Yeri",
+  "description": "WeCamp Unified - Frontend + Backend in Single Container",
   "docker": {
-    "dockerfile": "Dockerfile",
+    "dockerfile": "Dockerfile.unified",
     "buildContext": ".",
     "buildArgs": {
-      "VITE_API_BASE_URL": "${VITE_API_BASE_URL}"
+      "VITE_API_BASE_URL": "/api"
     },
     "ports": [
       {
@@ -15,26 +15,100 @@
         "protocol": "tcp"
       }
     ],
-    "volumes": [],
+    "volumes": [
+      {
+        "host": "wecamp-unified-uploads",
+        "container": "/app/uploads",
+        "type": "volume"
+      },
+      {
+        "host": "wecamp-unified-logs",
+        "container": "/app/logs",
+        "type": "volume"
+      }
+    ],
     "healthcheck": {
       "enabled": true,
       "path": "/health",
       "interval": 30,
       "timeout": 3,
       "retries": 3,
-      "startPeriod": 10
+      "startPeriod": 40
     },
     "restart": "unless-stopped",
     "replicas": 1
   },
   "environment": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "PORT": "3000",
+    "LOG_LEVEL": "info",
+    "MAX_FILE_SIZE": "10485760",
+    "ALLOWED_FILE_TYPES": "image/jpeg,image/png,image/webp,image/jpg",
+    "UPLOAD_DIR": "/app/uploads",
+    "MAX_USER_UPLOAD_QUOTA": "1073741824",
+    "RATE_LIMIT_WINDOW_MS": "900000",
+    "RATE_LIMIT_MAX_REQUESTS": "100",
+    "MAX_UPLOADS_PER_HOUR": "50",
+    "ENABLE_CSRF": "false",
+    "ENABLE_VIRUS_SCAN": "false",
+    "REQUIRE_VIRUS_SCAN": "false",
+    "HTTPS_ENFORCE": "true",
+    "MAX_JSON_SIZE": "1mb",
+    "MAX_URLENCODED_SIZE": "1mb",
+    "CORS_CREDENTIALS": "true",
+    "CORS_MAX_AGE": "86400",
+    "JWT_EXPIRES_IN": "7d",
+    "JWT_REFRESH_EXPIRES_IN": "30d"
   },
   "secrets": [
     {
-      "key": "VITE_API_BASE_URL",
+      "key": "DB_HOST",
       "required": true,
-      "description": "Backend API Base URL (e.g., https://api.wecamp.com.tr/api)"
+      "description": "MySQL container name (e.g., dfgdfg-wecampmysql-c6zsle)"
+    },
+    {
+      "key": "DB_USER",
+      "required": true,
+      "description": "MySQL database user"
+    },
+    {
+      "key": "DB_PASSWORD",
+      "required": true,
+      "description": "MySQL database password",
+      "sensitive": true
+    },
+    {
+      "key": "DB_NAME",
+      "required": true,
+      "description": "MySQL database name"
+    },
+    {
+      "key": "DB_PORT",
+      "required": false,
+      "description": "MySQL database port (default: 3306)",
+      "default": "3306"
+    },
+    {
+      "key": "JWT_SECRET",
+      "required": true,
+      "description": "JWT secret key (min 32 characters, recommended 64+)",
+      "sensitive": true
+    },
+    {
+      "key": "JWT_REFRESH_SECRET",
+      "required": false,
+      "description": "JWT refresh secret key (optional, uses JWT_SECRET if not set)",
+      "sensitive": true
+    },
+    {
+      "key": "FRONTEND_URL",
+      "required": true,
+      "description": "Frontend URL (e.g., https://sadece1deneme.com)"
+    },
+    {
+      "key": "ALLOWED_ORIGINS",
+      "required": true,
+      "description": "Comma-separated list of allowed CORS origins"
     }
   ],
   "deployment": {
@@ -44,12 +118,12 @@
   },
   "resources": {
     "limits": {
-      "cpu": "500m",
-      "memory": "256Mi"
+      "cpu": "1000m",
+      "memory": "512Mi"
     },
     "requests": {
-      "cpu": "100m",
-      "memory": "128Mi"
+      "cpu": "500m",
+      "memory": "256Mi"
     }
   },
   "scaling": {
@@ -83,4 +157,3 @@
     "logs": true
   }
 }
-

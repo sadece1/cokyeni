@@ -36,13 +36,15 @@ export const getBlogPosts = async (query: any) => {
   );
   const total = countResult[0].total;
 
-  // Ensure limit and offset are numbers
-  const limitNum = Number(limit);
-  const offsetNum = Number(offset);
+  // Ensure limit and offset are numbers (safe to interpolate as they're validated)
+  const limitNum = Math.max(1, Math.min(100, Number(limit) || 10));
+  const offsetNum = Math.max(0, Number(offset) || 0);
 
+  // LIMIT and OFFSET must be interpolated directly (not as prepared statement parameters)
+  // This is safe because limitNum and offsetNum are validated numbers
   const [posts] = await pool.execute<Array<any>>(
-    `SELECT * FROM blog_posts ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-    [...values, limitNum, offsetNum]
+    `SELECT * FROM blog_posts ${whereClause} ORDER BY created_at DESC LIMIT ${limitNum} OFFSET ${offsetNum}`,
+    values
   );
 
   const parsedPosts = posts.map((p: any) => ({

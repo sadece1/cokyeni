@@ -442,7 +442,7 @@ export const GearDetailsPage = () => {
           }
         })}
         <span className="text-xs font-medium text-gray-700 dark:text-gray-300 ml-1.5">
-          {rating.toFixed(1)} / 5.0
+          {Number(rating).toFixed(1)} / 5.0
         </span>
       </div>
     );
@@ -518,12 +518,13 @@ export const GearDetailsPage = () => {
                         <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">Değerlendirme</div>
                         <div className="flex items-center gap-2">
                           <span className="text-xl font-semibold text-gray-900 dark:text-white">
-                            {gear.rating.toFixed(1)}
+                            {Number(gear.rating).toFixed(1)}
                           </span>
                           <div className="flex items-center gap-0.5">
                             {[...Array(5)].map((_, i) => {
-                              const fullStars = Math.floor(gear.rating!);
-                              const hasHalfStar = gear.rating! % 1 >= 0.5;
+                              const ratingNum = Number(gear.rating);
+                              const fullStars = Math.floor(ratingNum);
+                              const hasHalfStar = ratingNum % 1 >= 0.5;
                               if (i < fullStars) {
                                 return <span key={i} className="text-yellow-500">★</span>;
                               } else if (i === fullStars && hasHalfStar) {
@@ -746,7 +747,7 @@ export const GearDetailsPage = () => {
                       </div>
                       <div className="text-right">
                         <div className="text-2xl font-semibold text-gray-900 dark:text-white">
-                          {gear.rating.toFixed(1)}
+                          {Number(gear.rating).toFixed(1)}
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
                           / 5.0

@@ -351,7 +351,7 @@ export const HomePage = () => {
                         {item.rating && (
                           <div className="flex items-center text-yellow-500">
                             <span className="mr-1">⭐</span>
-                            <span className="font-semibold">{item.rating.toFixed(1)}</span>
+                            <span className="font-semibold">{Number(item.rating).toFixed(1)}</span>
                           </div>
                         )}
                       </div>

@@ -83,60 +83,66 @@ export const CategoryPage = () => {
           }
 
           if (gear.length > 0) {
-        // Filter gear by category slug or categoryId
-        console.log('Filtering gear for category:', categorySlug, 'Category ID:', category.id);
-        console.log('Total gear items:', gear.length);
-        
-        const filtered = gear.filter((item) => {
-          // Check categoryId first (most reliable) - exact match
-          if (item.categoryId === category.id) {
-            console.log('Matched by categoryId:', item.name);
-            return true;
-          }
-          // Check category slug match - most reliable for dynamic IDs
-          if (item.category === categorySlug || item.category === category.slug) {
-            console.log('Matched by category slug:', item.name);
-            return true;
-          }
-          // Check if categoryId matches slug pattern (cat-{slug})
-          if (item.categoryId && item.categoryId === `cat-${categorySlug}`) {
-            console.log('Matched by categoryId pattern:', item.name);
-            return true;
-          }
-          // Check if categoryId ends with slug (for dynamic IDs)
-          if (item.categoryId && category.slug && item.categoryId.endsWith(category.slug)) {
-            console.log('Matched by categoryId suffix:', item.name);
-            return true;
-          }
-          // Check if category is string and includes slug
-          if (typeof item.category === 'string' && item.category.includes(categorySlug)) {
-            console.log('Matched by category string:', item.name);
-            return true;
-          }
-          // Debug: log non-matching items for this category
-          if (item.categoryId && item.categoryId.includes('kamp-ocaklari')) {
-            console.log('Debug - gear item has kamp-ocaklari:', {
-              itemName: item.name,
-              itemCategoryId: item.categoryId,
-              itemCategory: item.category,
-              categoryId: category.id,
-              categorySlug: category.slug
+            // Filter gear by category slug or categoryId
+            console.log('Filtering gear for category:', categorySlug, 'Category ID:', category.id);
+            console.log('Total gear items:', gear.length);
+            
+            const filtered = gear.filter((item) => {
+              // Check categoryId first (most reliable) - exact match
+              if (item.categoryId === category.id) {
+                console.log('Matched by categoryId:', item.name);
+                return true;
+              }
+              // Check category slug match - most reliable for dynamic IDs
+              if (item.category === categorySlug || item.category === category.slug) {
+                console.log('Matched by category slug:', item.name);
+                return true;
+              }
+              // Check if categoryId matches slug pattern (cat-{slug})
+              if (item.categoryId && item.categoryId === `cat-${categorySlug}`) {
+                console.log('Matched by categoryId pattern:', item.name);
+                return true;
+              }
+              // Check if categoryId ends with slug (for dynamic IDs)
+              if (item.categoryId && category.slug && item.categoryId.endsWith(category.slug)) {
+                console.log('Matched by categoryId suffix:', item.name);
+                return true;
+              }
+              // Check if category is string and includes slug
+              if (typeof item.category === 'string' && item.category.includes(categorySlug)) {
+                console.log('Matched by category string:', item.name);
+                return true;
+              }
+              // Debug: log non-matching items for this category
+              if (item.categoryId && item.categoryId.includes('kamp-ocaklari')) {
+                console.log('Debug - gear item has kamp-ocaklari:', {
+                  itemName: item.name,
+                  itemCategoryId: item.categoryId,
+                  itemCategory: item.category,
+                  categoryId: category.id,
+                  categorySlug: category.slug
+                });
+              }
+              return false;
             });
+            
+            console.log('Filtered gear count:', filtered.length);
+            console.log('Filtered items:', filtered.map(g => g.name));
+            
+            setCategoryGear(filtered);
+            setIsLoading(false);
+          } else if (!gearLoading) {
+            // If gear is empty and not loading, try fetching again
+            console.log('Gear is empty, fetching...');
+            fetchGear({}, 1, 10000);
           }
-          return false;
-        });
-        
-        console.log('Filtered gear count:', filtered.length);
-        console.log('Filtered items:', filtered.map(g => g.name));
-        
-        setCategoryGear(filtered);
-        setIsLoading(false);
-      } else if (!gearLoading) {
-        // If gear is empty and not loading, try fetching again
-        console.log('Gear is empty, fetching...');
-        fetchGear({}, 1, 10000);
+        } catch (error) {
+          console.error('Failed to check category:', error);
+          setIsLoading(false);
+        }
       }
-    }
+    };
+    checkCategory();
   }, [categorySlug, gear, gearLoading, fetchGear]);
 
   // Apply filters to category gear

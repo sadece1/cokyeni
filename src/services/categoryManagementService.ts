@@ -17,8 +17,8 @@ export const categoryManagementService = {
   },
 
   async getCategoryBySlug(slug: string): Promise<Category> {
-    const response = await api.get<{ category: Category }>(`/categories/slug/${slug}`);
-    return response.data.category || response.data as any;
+    const response = await api.get<{ success: boolean; data: Category }>(`/categories/slug/${slug}`);
+    return response.data.data || response.data as any;
   },
 
   async createCategory(category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>): Promise<Category> {

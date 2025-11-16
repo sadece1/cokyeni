@@ -37,9 +37,11 @@ const app: Application = express();
 app.set('trust proxy', 1);
 
 // HTTPS enforcement (redirect HTTP to HTTPS in production)
-if (process.env.NODE_ENV === 'production') {
-  app.use(enforceHttps);
-}
+// DISABLED for unified deployment: NGINX handles SSL termination
+// All requests come through NGINX reverse proxy, so HTTPS enforcement is not needed
+// if (process.env.NODE_ENV === 'production') {
+//   app.use(enforceHttps);
+// }
 
 // Security middleware with enhanced CSP and security headers
 app.use(helmet({

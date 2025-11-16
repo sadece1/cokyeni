@@ -21,8 +21,19 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 // Test database connection and start server
 const startServer = async () => {
   try {
+    // Log environment variables (without sensitive data)
+    logger.info('🔧 Environment Check:');
+    logger.info(`  NODE_ENV: ${NODE_ENV}`);
+    logger.info(`  PORT: ${PORT}`);
+    logger.info(`  DB_HOST: ${process.env.DB_HOST || 'NOT SET'}`);
+    logger.info(`  DB_USER: ${process.env.DB_USER || 'NOT SET'}`);
+    logger.info(`  DB_NAME: ${process.env.DB_NAME || 'NOT SET'}`);
+    logger.info(`  DB_PORT: ${process.env.DB_PORT || '3306'}`);
+    
     // Test database connection
+    logger.info('🔌 Testing database connection...');
     await testConnection();
+    logger.info('✅ Database connection successful');
 
     // Start server
     app.listen(PORT, () => {
@@ -30,9 +41,17 @@ const startServer = async () => {
       logger.info(`📡 API endpoint: http://localhost:${PORT}/api`);
       logger.info(`🏥 Health check: http://localhost:${PORT}/health`);
     });
-  } catch (error) {
-    logger.error('Failed to start server:', error);
-    process.exit(1);
+  } catch (error: any) {
+    logger.error('❌ Failed to start server:', error);
+    logger.error('Error details:', {
+      message: error?.message,
+      stack: error?.stack,
+      code: error?.code
+    });
+    // Wait a bit before exiting to see logs
+    setTimeout(() => {
+      process.exit(1);
+    }, 2000);
   }
 };
 

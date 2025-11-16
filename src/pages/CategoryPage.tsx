@@ -18,6 +18,7 @@ export const CategoryPage = () => {
   const [filters, setFilters] = useState<GearFilters>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadCategoryData = async () => {
@@ -40,10 +41,13 @@ export const CategoryPage = () => {
           }
           
           // Fetch all gear and filter by category
-          // Use a very high limit to get all items for proper filtering
-          fetchGear({}, 1, 10000);
-        } catch (error) {
+          // Use limit 1000 (max allowed by backend)
+          setError(null);
+          await fetchGear({}, 1, 1000);
+        } catch (error: any) {
           console.error('Failed to load category data:', error);
+          const errorMessage = error?.response?.data?.message || error?.message || 'Kategori yüklenirken bir hata oluştu';
+          setError(errorMessage);
           setCategoryInfo(null);
           setIsLoading(false);
         }
@@ -134,10 +138,18 @@ export const CategoryPage = () => {
           } else if (!gearLoading) {
             // If gear is empty and not loading, try fetching again
             console.log('Gear is empty, fetching...');
-            fetchGear({}, 1, 10000);
+            setError(null);
+            try {
+              await fetchGear({}, 1, 1000);
+            } catch (fetchError: any) {
+              const errorMessage = fetchError?.response?.data?.message || fetchError?.message || 'Ürünler yüklenirken bir hata oluştu';
+              setError(errorMessage);
+            }
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to check category:', error);
+          const errorMessage = error?.response?.data?.message || error?.message || 'Kategori kontrol edilirken bir hata oluştu';
+          setError(errorMessage);
           setIsLoading(false);
         }
       }
@@ -288,6 +300,39 @@ export const CategoryPage = () => {
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">⚠️</span>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-1">
+                    Hata
+                  </h3>
+                  <p className="text-red-700 dark:text-red-300 text-sm">
+                    {error}
+                  </p>
+                  {error.includes('429') && (
+                    <p className="text-red-600 dark:text-red-400 text-xs mt-2">
+                      Çok fazla istek gönderildi. Lütfen birkaç saniye bekleyip sayfayı yenileyin.
+                    </p>
+                  )}
+                  {error.includes('400') && (
+                    <p className="text-red-600 dark:text-red-400 text-xs mt-2">
+                      Geçersiz istek. Lütfen sayfayı yenileyin.
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={() => setError(null)}
+                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">

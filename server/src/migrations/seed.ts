@@ -54,42 +54,207 @@ const seedData = async () => {
       [userId2, 'user2@campscape.com', 'Jane Smith', userPassword]
     );
 
-    // Create Categories
+    // Create Categories (Hierarchical Structure)
     logger.info('Creating categories...');
-    const tentCategoryId = generateId();
-    const sleepingBagCategoryId = generateId();
-    const cookingCategoryId = generateId();
-    const lightingCategoryId = generateId();
+    
+    // Root Categories
+    const kampMalzemeleriId = generateId();
+    const outdoorEkipmanlariId = generateId();
+    
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, NULL, '🏕️', 1)`,
+      [kampMalzemeleriId, 'Kamp Malzemeleri', 'kamp-malzemeleri', 'Kamp için gerekli tüm malzemeler']
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, NULL, '⛺', 2)`,
+      [outdoorEkipmanlariId, 'Outdoor Ekipmanları', 'outdoor-ekipmanlari', 'Doğa sporları ve outdoor ekipmanları']
+    );
+
+    // Column Categories (Sütun Kategorileri) - Kamp Malzemeleri altında
+    const kampMutfagiId = generateId();
+    const kampMobilyalariId = generateId();
+    const aydinlatmaFenerlerId = generateId();
+    const isiticiSobalarId = generateId();
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, '🔸', 1)`,
+      [kampMutfagiId, 'Kamp Mutfağı', 'kamp-mutfagi', 'Kamp mutfak ekipmanları', kampMalzemeleriId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, '🔸', 2)`,
+      [kampMobilyalariId, 'Kamp Mobilyaları', 'kamp-mobilyalari', 'Kamp mobilyaları', kampMalzemeleriId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, '🔸', 3)`,
+      [aydinlatmaFenerlerId, 'Aydınlatma ve Fenerler', 'aydinlatma-fenerler', 'Kamp aydınlatma ürünleri', kampMalzemeleriId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, '🔸', 4)`,
+      [isiticiSobalarId, 'Isıtıcı ve Sobalar', 'isitici-sobalar', 'Kamp ısıtıcıları ve sobaları', kampMalzemeleriId]
+    );
+
+    // Column Categories - Outdoor Ekipmanları altında
+    const kampTemelEkipmanlariId = generateId();
+    const kampAracAksesuarlariId = generateId();
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, '🔸', 1)`,
+      [kampTemelEkipmanlariId, 'Kamp Temel Ekipmanları', 'kamp-temel-ekipmanlari', 'Temel kamp ekipmanları', outdoorEkipmanlariId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, '🔸', 2)`,
+      [kampAracAksesuarlariId, 'Kamp Araç ve Aksesuarları', 'kamp-arac-aksesuarlari', 'Kamp araç ve aksesuarları', outdoorEkipmanlariId]
+    );
+
+    // Sub Categories (Alt Kategoriler) - Kamp Mutfağı altında
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 1)`,
+      [generateId(), 'Kamp Ocakları', 'kamp-ocaklari', 'Kamp ocakları', kampMutfagiId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 2)`,
+      [generateId(), 'Termos ve Mug', 'termos', 'Termos ve mug ürünleri', kampMutfagiId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 3)`,
+      [generateId(), 'Kamp Çatal Kaşık Bıçak Setleri', 'mutfak-setleri', 'Kamp mutfak setleri', kampMutfagiId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 4)`,
+      [generateId(), 'Barbekü, Mangal ve Izgaralar', 'barbeku', 'Barbekü ve mangal ürünleri', kampMutfagiId]
+    );
+
+    // Sub Categories - Kamp Mobilyaları altında
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 1)`,
+      [generateId(), 'Kamp Masası', 'kamp-masasi', 'Kamp masaları', kampMobilyalariId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 2)`,
+      [generateId(), 'Kamp Sandalyesi', 'kamp-sandalyesi', 'Kamp sandalyeleri', kampMobilyalariId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 3)`,
+      [generateId(), 'Kamp Taburesi', 'kamp-taburesi', 'Kamp tabureleri', kampMobilyalariId]
+    );
+
+    // Sub Categories - Aydınlatma ve Fenerler altında
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 1)`,
+      [generateId(), 'Kamp Fenerleri', 'kamp-fenerleri', 'Kamp fenerleri', aydinlatmaFenerlerId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 2)`,
+      [generateId(), 'Kamp Lambaları', 'kamp-lambalari', 'Kamp lambaları', aydinlatmaFenerlerId]
+    );
+
+    // Sub Categories - Isıtıcı ve Sobalar altında
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 1)`,
+      [generateId(), 'Çadır Sobaları', 'cadir-sobalari', 'Çadır sobaları', isiticiSobalarId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 2)`,
+      [generateId(), 'LPG Tüp Sobaları', 'lpg-tup-sobalari', 'LPG tüp sobaları', isiticiSobalarId]
+    );
+
+    // Sub Categories - Kamp Temel Ekipmanları altında
+    const cadirlarId = generateId();
+    const uykuTulumlariId = generateId();
+    const kampMatiId = generateId();
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 1)`,
+      [cadirlarId, 'Kamp Çadırları', 'cadir', 'Kamp çadırları', kampTemelEkipmanlariId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 2)`,
+      [uykuTulumlariId, 'Uyku Tulumları', 'uyku-tulumu', 'Uyku tulumları', kampTemelEkipmanlariId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 3)`,
+      [kampMatiId, 'Kamp Matı', 'kamp-mati', 'Kamp matları', kampTemelEkipmanlariId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 4)`,
+      [generateId(), 'Hamaklar', 'hamak', 'Hamaklar', kampTemelEkipmanlariId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 5)`,
+      [generateId(), 'Rüzgarlıklar', 'ruzgarlik', 'Rüzgarlıklar', kampTemelEkipmanlariId]
+    );
+
+    // Sub Categories - Kamp Araç ve Aksesuarları altında
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 1)`,
+      [generateId(), 'Kartuş Tüpler', 'kartus-tup', 'Kartuş tüpler', kampAracAksesuarlariId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 2)`,
+      [generateId(), 'Pürmüzler', 'purmuz', 'Pürmüzler', kampAracAksesuarlariId]
+    );
+
+    await pool.execute(
+      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
+       VALUES (?, ?, ?, ?, ?, NULL, 3)`,
+      [generateId(), 'Kamp Bıçakları', 'bicak', 'Kamp bıçakları', kampAracAksesuarlariId]
+    );
+
+    // Keep old category IDs for backward compatibility with gear items
+    const tentCategoryId = cadirlarId;
+    const sleepingBagCategoryId = uykuTulumlariId;
+    const cookingCategoryId = kampMutfagiId;
+    const lightingCategoryId = aydinlatmaFenerlerId;
     const backpackCategoryId = generateId();
-
+    
+    // Add backpack as subcategory
     await pool.execute(
       `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
-       VALUES (?, ?, ?, ?, NULL, 'tent', 1)`,
-      [tentCategoryId, 'Çadırlar', 'tent', 'Kamp çadırları ve aksesuarları']
-    );
-
-    await pool.execute(
-      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
-       VALUES (?, ?, ?, ?, NULL, 'sleeping-bag', 2)`,
-      [sleepingBagCategoryId, 'Uyku Tulumları', 'sleeping-bag', 'Uyku tulumları ve matlar']
-    );
-
-    await pool.execute(
-      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
-       VALUES (?, ?, ?, ?, NULL, 'cooking', 3)`,
-      [cookingCategoryId, 'Pişirme Ekipmanları', 'cooking', 'Kamp ocakları ve pişirme aletleri']
-    );
-
-    await pool.execute(
-      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
-       VALUES (?, ?, ?, ?, NULL, 'lighting', 4)`,
-      [lightingCategoryId, 'Aydınlatma', 'lighting', 'Fenerler ve kamp aydınlatmaları']
-    );
-
-    await pool.execute(
-      `INSERT INTO categories (id, name, slug, description, parent_id, icon, \`order\`) 
-       VALUES (?, ?, ?, ?, NULL, 'backpack', 5)`,
-      [backpackCategoryId, 'Sırt Çantaları', 'backpack', 'Kamp sırt çantaları']
+       VALUES (?, ?, ?, ?, ?, NULL, 6)`,
+      [backpackCategoryId, 'Sırt Çantaları', 'backpack', 'Kamp sırt çantaları', kampTemelEkipmanlariId]
     );
 
     // Create Campsites

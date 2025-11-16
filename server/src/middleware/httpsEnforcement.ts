@@ -15,6 +15,27 @@ export const enforceHttps = (
     return;
   }
 
+  // Skip HTTPS enforcement for health check and internal requests
+  // Health check is used by container orchestration and should be fast
+  if (req.path === '/health' || req.path === '/api/health') {
+    next();
+    return;
+  }
+
+  // Skip HTTPS enforcement for internal requests (from NGINX reverse proxy)
+  // Internal requests come from localhost/127.0.0.1 and don't need HTTPS redirect
+  const isInternalRequest = 
+    req.ip === '127.0.0.1' || 
+    req.ip === '::1' || 
+    req.ip === '::ffff:127.0.0.1' ||
+    req.headers['x-forwarded-for']?.includes('127.0.0.1') ||
+    req.headers['host']?.includes('localhost');
+
+  if (isInternalRequest) {
+    next();
+    return;
+  }
+
   // Check if request is secure
   const isSecure =
     req.secure ||

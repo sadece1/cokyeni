@@ -1,0 +1,28 @@
+[mysqld]
+# InnoDB Settings - Lock hatalarını önlemek için
+innodb_use_native_aio = 0
+innodb_flush_log_at_trx_commit = 2
+innodb_flush_method = O_DIRECT
+innodb_file_per_table = 1
+innodb_buffer_pool_size = 128M
+
+# Performance Settings
+skip-name-resolve
+max_connections = 200
+max_allowed_packet = 64M
+
+# Logging - Uyarıları azaltmak için
+general_log = 0
+slow_query_log = 0
+log_error_verbosity = 1
+log_warnings = 0
+
+# Security - PID file uyarısını önlemek için
+pid-file = /var/run/mysqld/mysqld.pid
+socket = /var/run/mysqld/mysqld.sock
+
+# SSL - Self-signed sertifika uyarısını kaldırmak için
+skip_ssl
+ssl = 0
+require_secure_transport = 0
+

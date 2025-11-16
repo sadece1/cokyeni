@@ -71,7 +71,9 @@ export const formatPagination = ({ page, limit, total }: PaginationParams) => {
  */
 export const getPaginationParams = (query: any) => {
   const page = Math.max(1, parseInt(query.page || '1', 10));
-  const limit = Math.min(100, Math.max(1, parseInt(query.limit || '10', 10)));
+  // Allow higher limits for category pages that need all items for filtering
+  const maxLimit = parseInt(query.limit || '10', 10);
+  const limit = Math.min(1000, Math.max(1, maxLimit)); // Increased max limit to 1000
   const offset = (page - 1) * limit;
   return { page, limit, offset };
 };

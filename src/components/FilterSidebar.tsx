@@ -53,25 +53,39 @@ export const FilterSidebar = ({
   // Load brands and colors for gear filters
   useEffect(() => {
     if (type === 'gear') {
-      const loadBrandsAndColors = () => {
-        const allBrands = brandService.getAllBrands();
-        setBrands(allBrands.map(b => b.name));
-        
-        const allColors = colorService.getAllColors();
-        setColors(allColors.map(c => c.name));
+      const loadBrandsAndColors = async () => {
+        try {
+          const allBrands = await brandService.getAllBrands();
+          setBrands(Array.isArray(allBrands) ? allBrands.map(b => b.name) : []);
+          
+          const allColors = await colorService.getAllColors();
+          setColors(Array.isArray(allColors) ? allColors.map(c => c.name) : []);
+        } catch (error) {
+          console.error('Failed to load brands/colors:', error);
+          setBrands([]);
+          setColors([]);
+        }
       };
 
       loadBrandsAndColors();
 
       // Listen for updates
-      const handleBrandsUpdate = () => {
-        const updatedBrands = brandService.getAllBrands();
-        setBrands(updatedBrands.map(b => b.name));
+      const handleBrandsUpdate = async () => {
+        try {
+          const updatedBrands = await brandService.getAllBrands();
+          setBrands(Array.isArray(updatedBrands) ? updatedBrands.map(b => b.name) : []);
+        } catch (error) {
+          console.error('Failed to update brands:', error);
+        }
       };
       
-      const handleColorsUpdate = () => {
-        const updatedColors = colorService.getAllColors();
-        setColors(updatedColors.map(c => c.name));
+      const handleColorsUpdate = async () => {
+        try {
+          const updatedColors = await colorService.getAllColors();
+          setColors(Array.isArray(updatedColors) ? updatedColors.map(c => c.name) : []);
+        } catch (error) {
+          console.error('Failed to update colors:', error);
+        }
       };
       
       window.addEventListener('brandsUpdated', handleBrandsUpdate);

@@ -23,13 +23,16 @@ export const enforceHttps = (
   }
 
   // Skip HTTPS enforcement for internal requests (from NGINX reverse proxy)
-  // Internal requests come from localhost/127.0.0.1 and don't need HTTPS redirect
+  // NGINX does SSL termination and proxies to backend via HTTP
+  // All requests from NGINX are internal and should bypass HTTPS enforcement
   const isInternalRequest = 
     req.ip === '127.0.0.1' || 
     req.ip === '::1' || 
     req.ip === '::ffff:127.0.0.1' ||
     req.headers['x-forwarded-for']?.includes('127.0.0.1') ||
-    req.headers['host']?.includes('localhost');
+    req.headers['host']?.includes('localhost') ||
+    req.headers['x-real-ip'] || // NGINX sets this for proxied requests
+    !req.headers['x-forwarded-proto']; // If no X-Forwarded-Proto, it's from NGINX (internal)
 
   if (isInternalRequest) {
     next();
@@ -37,6 +40,7 @@ export const enforceHttps = (
   }
 
   // Check if request is secure
+  // Only check for external direct requests (not from NGINX)
   const isSecure =
     req.secure ||
     req.headers['x-forwarded-proto'] === 'https' ||

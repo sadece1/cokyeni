@@ -100,10 +100,15 @@ export const getGear = async (query: any) => {
   );
   const total = countResult[0].total;
 
-  // Get gear
+  // Ensure limit and offset are numbers (safe to interpolate as they're validated)
+  const limitNum = Math.max(1, Math.min(100, Number(limit) || 10));
+  const offsetNum = Math.max(0, Number(offset) || 0);
+
+  // LIMIT and OFFSET must be interpolated directly (not as prepared statement parameters)
+  // This is safe because limitNum and offsetNum are validated numbers
   const [gear] = await pool.execute<Array<any>>(
-    `SELECT * FROM gear ${whereClause} ORDER BY ${orderBy} LIMIT ? OFFSET ?`,
-    [...values, limit, offset]
+    `SELECT * FROM gear ${whereClause} ORDER BY ${orderBy} LIMIT ${limitNum} OFFSET ${offsetNum}`,
+    values
   );
 
   // Parse JSON fields

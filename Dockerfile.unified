@@ -62,6 +62,9 @@ RUN npm install --only=production
 COPY --from=backend-builder /app/dist ./dist
 COPY --from=backend-builder /app/node_modules ./node_modules
 
+# Copy migration SQL files (needed for migration script)
+COPY server/src/migrations/*.sql ./dist/migrations/
+
 # Copy backend files
 COPY server/start.sh ./start.sh
 RUN chmod +x ./start.sh

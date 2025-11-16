@@ -10,6 +10,7 @@
     "start:dev": "tsx src/server.ts",
     "db:migrate": "tsx src/migrations/migrate.ts",
     "db:seed": "tsx src/migrations/seed.ts",
+    "db:seed:prod": "node dist/migrations/seed.js",
     "db:reset": "npm run db:migrate && npm run db:seed",
     "lint": "eslint src --ext .ts",
     "test": "jest",

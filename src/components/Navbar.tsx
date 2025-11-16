@@ -195,16 +195,30 @@ export const Navbar = () => {
     const loadCategories = async () => {
       try {
         const allCategories = await categoryManagementService.getAllCategories();
+        console.log('📊 Loaded categories:', allCategories.length);
+        
+        if (!Array.isArray(allCategories) || allCategories.length === 0) {
+          console.warn('⚠️ No categories found, using legacy categories');
+          setCategories(legacyCategories);
+          return;
+        }
+
         const rootCategories = allCategories
-          .filter(cat => !cat.parentId)
+          .filter(cat => !cat.parentId || cat.parentId === null)
           .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        console.log('📊 Root categories:', rootCategories.length);
 
         const categoryItems = rootCategories.map(rootCat => 
           convertCategoryToItem(rootCat, allCategories)
         );
 
+        console.log('📊 Category items:', categoryItems.length);
         if (categoryItems.length > 0) {
           setCategories(categoryItems);
+        } else {
+          console.warn('⚠️ No category items created, using legacy categories');
+          setCategories(legacyCategories);
         }
       } catch (error) {
         console.error('Failed to load categories:', error);

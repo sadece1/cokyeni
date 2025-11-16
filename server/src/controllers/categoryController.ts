@@ -17,9 +17,15 @@ export const getAllCategories = asyncHandler(async (req: Request, res: Response)
   res.status(200).json({
     success: true,
     data: categories.map((c: any) => ({
-      ...c,
-      created_at: parseDate(c.created_at),
-      updated_at: parseDate(c.updated_at),
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      description: c.description,
+      parentId: c.parent_id,
+      icon: c.icon,
+      order: c.order,
+      createdAt: parseDate(c.created_at),
+      updatedAt: parseDate(c.updated_at),
     })),
   });
 });
@@ -39,9 +45,15 @@ export const getSingleCategory = asyncHandler(async (req: Request, res: Response
   res.status(200).json({
     success: true,
     data: {
-      ...category,
-      created_at: parseDate(category.created_at),
-      updated_at: parseDate(category.updated_at),
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      parentId: (category as any).parent_id,
+      icon: category.icon,
+      order: category.order,
+      createdAt: parseDate((category as any).created_at),
+      updatedAt: parseDate((category as any).updated_at),
     },
   });
 });
@@ -56,9 +68,15 @@ export const getCategoryBySlug = asyncHandler(async (req: Request, res: Response
   res.status(200).json({
     success: true,
     data: {
-      ...category,
-      created_at: parseDate(category.created_at),
-      updated_at: parseDate(category.updated_at),
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      parentId: (category as any).parent_id,
+      icon: category.icon,
+      order: category.order,
+      createdAt: parseDate((category as any).created_at),
+      updatedAt: parseDate((category as any).updated_at),
     },
   });
 });
@@ -69,9 +87,15 @@ export const create = asyncHandler(async (req: AuthRequest, res: Response) => {
     success: true,
     message: 'Category created successfully',
     data: {
-      ...category,
-      created_at: parseDate(category.created_at),
-      updated_at: parseDate(category.updated_at),
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      parentId: (category as any).parent_id,
+      icon: category.icon,
+      order: category.order,
+      createdAt: parseDate((category as any).created_at),
+      updatedAt: parseDate((category as any).updated_at),
     },
   });
 });
@@ -83,9 +107,15 @@ export const update = asyncHandler(async (req: AuthRequest, res: Response) => {
     success: true,
     message: 'Category updated successfully',
     data: {
-      ...category,
-      created_at: parseDate(category.created_at),
-      updated_at: parseDate(category.updated_at),
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      parentId: (category as any).parent_id,
+      icon: category.icon,
+      order: category.order,
+      createdAt: parseDate((category as any).created_at),
+      updatedAt: parseDate((category as any).updated_at),
     },
   });
 });

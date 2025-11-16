@@ -192,9 +192,9 @@ export const Navbar = () => {
 
   // Load categories from categoryManagementService
   useEffect(() => {
-    const loadCategories = () => {
+    const loadCategories = async () => {
       try {
-        const allCategories = categoryManagementService.getAllCategories();
+        const allCategories = await categoryManagementService.getAllCategories();
         const rootCategories = allCategories
           .filter(cat => !cat.parentId)
           .sort((a, b) => (a.order || 0) - (b.order || 0));

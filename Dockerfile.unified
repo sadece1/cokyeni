@@ -70,6 +70,7 @@ RUN chmod +x ./start.sh
 COPY --from=frontend-builder /app/dist ./frontend-dist
 
 # Copy unified NGINX configuration
+COPY nginx.main.conf /etc/nginx/nginx.conf
 COPY nginx.unified.conf /etc/nginx/conf.d/default.conf
 
 # Create supervisor config for running both services
@@ -84,7 +85,8 @@ RUN addgroup -g 1001 -S nodejs && \
     chown -R nodejs:nodejs /app /var/log/nginx /var/cache/nginx /var/run/nginx /var/run/supervisor
 
 # Fix NGINX permissions
-RUN chown -R nginx:nginx /var/log/nginx /var/cache/nginx /var/run/nginx
+RUN chown -R nginx:nginx /var/log/nginx /var/cache/nginx /var/run/nginx && \
+    chmod 755 /var/run/nginx
 
 # Fix Supervisor permissions (supervisor runs as root, needs write access)
 RUN chown -R root:root /var/log/supervisor /var/run/supervisor && \
